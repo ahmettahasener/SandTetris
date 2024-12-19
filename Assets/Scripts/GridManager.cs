@@ -4,7 +4,7 @@ public class GridManager : MonoBehaviour
 {
     public GameObject cellObject; //The gameobject created for each grid cell
     public int[,] grid;
-    private GameObject[,] cellSRenderers; // Grid for SpriteRenderer's
+    public GameObject[,] cellSRenderers; // Grid for SpriteRenderer's
     public int columns; //Grid columns
     public int rows; //Grid rows
     float spriteSize = 0.1f;
@@ -12,7 +12,7 @@ public class GridManager : MonoBehaviour
     private Color[,] cellColors;
     public Color sandColor;
     public Color backgroundColor;
-
+    public TetrisManager tetrisManager;
     void Start()
     {
         // Calculating camera borders
@@ -66,6 +66,7 @@ public class GridManager : MonoBehaviour
                 {
                     grid[x, y] = 0;      // Empty the current cell
                     grid[x, y - 1] = 1; // The lower cell becomes sand
+                    HandleTetrisPieces(x,y);
                 }
                 //Randomness if both right and left cells are empty
                 else if (grid[x, y] == 1 && x > 0 && x < columns - 1 && y != 0 && grid[x + 1, y - 1] == 0 && grid[x - 1, y - 1] == 0) 
@@ -119,7 +120,34 @@ public class GridManager : MonoBehaviour
         }
         else
         {
-            sr.color = backgroundColor; // Boþ hücreler siyah
+            sr.color = backgroundColor; // Empty cells
+        }
+    }
+
+    void HandleTetrisPieces(int x, int y)
+    {
+        if (tetrisManager != null && tetrisManager.hasActivePiece)
+        {
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                if (x + 1 < columns && grid[x + 1, y - 1] == 0)
+                {
+                    Debug.Log("Moving right");
+
+                    grid[x, y - 1] = 0;
+                    grid[x + 1, y - 1] = 1;
+                }
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                if (x - 1 >= 0 && grid[x - 1, y - 1] == 0)
+                {
+                    Debug.Log("Moving left");
+
+                    grid[x, y - 1] = 0;
+                    grid[x - 1, y - 1] = 1;
+                }
+            }
         }
     }
 
