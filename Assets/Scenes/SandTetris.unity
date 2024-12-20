@@ -245,6 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1509523417}
   hasActivePiece: 0
+  activePieceCells: []
 --- !u!4 &1110745143
 Transform:
   m_ObjectHideFlags: 0
@@ -296,6 +297,7 @@ MonoBehaviour:
   sandColor: {r: 0.79607844, g: 0.7411765, b: 0.5764706, a: 1}
   backgroundColor: {r: 0.23529412, g: 0.22745098, b: 0.20784314, a: 1}
   tetrisManager: {fileID: 1110745142}
+  tetrisMode: 1
 --- !u!4 &1509523418
 Transform:
   m_ObjectHideFlags: 0

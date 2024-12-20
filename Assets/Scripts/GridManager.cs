@@ -1,4 +1,5 @@
 using UnityEngine;
+using static TetrisPiece;
 
 public class GridManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GridManager : MonoBehaviour
     public Color sandColor;
     public Color backgroundColor;
     public TetrisManager tetrisManager;
+    public bool tetrisMode;
     void Start()
     {
         // Calculating camera borders
@@ -52,21 +54,33 @@ public class GridManager : MonoBehaviour
 
     void Update()
     {
-        UpdateGrid();
+        if (tetrisMode && tetrisManager != null && !tetrisManager.hasActivePiece)
+        {
+            Debug.Log("updating grid");
+            UpdateGrid();
+        }
+        else if (!tetrisMode) {
+            UpdateGrid();
+        }
         UpdateCellSprites();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            tetrisManager.CreateNewPiece(TetrisShapes.T,0,0);
+        }
     }
 
     void UpdateGrid()
     {
-        for (int x = 0; x < columns; x++)
+        for (int y = 0; y < rows - 1; y++) // Movement towards the bottom line
         {
-            for (int y = 0; y < rows - 1; y++) // Movement towards the bottom line
+            for (int x = 0; x < columns; x++) 
             {
                 if (grid[x, y] == 1 && y != 0 && grid[x, y - 1] == 0)
                 {
                     grid[x, y] = 0;      // Empty the current cell
                     grid[x, y - 1] = 1; // The lower cell becomes sand
-                    HandleTetrisPieces(x,y);
+                    //HandleTetrisPieces(x,y);
                 }
                 //Randomness if both right and left cells are empty
                 else if (grid[x, y] == 1 && x > 0 && x < columns - 1 && y != 0 && grid[x + 1, y - 1] == 0 && grid[x - 1, y - 1] == 0) 
@@ -112,7 +126,7 @@ public class GridManager : MonoBehaviour
 
     void UpdateCellColor(int x, int y)
     {
-        SpriteRenderer sr = cellSRenderers[x, y].GetComponentInChildren<SpriteRenderer>();
+        SpriteRenderer sr = cellSRenderers[x, y].GetComponentInChildren<SpriteRenderer>(); //bir kez alalým sr leri onu güncelleyelim her update olmasýn
         if (grid[x, y] == 1)
         {
             //sr.color = cellColors[x, y]; // Use calculated color
@@ -124,31 +138,31 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    void HandleTetrisPieces(int x, int y)
-    {
-        if (tetrisManager != null && tetrisManager.hasActivePiece)
-        {
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                if (x + 1 < columns && grid[x + 1, y - 1] == 0)
-                {
-                    Debug.Log("Moving right");
+    //void HandleTetrisPieces(int x, int y)
+    //{
+    //    if (tetrisManager != null && tetrisManager.hasActivePiece)
+    //    {
+    //        if (Input.GetKey(KeyCode.RightArrow))
+    //        {
+    //            if (x + 1 < columns && grid[x + 1, y - 1] == 0)
+    //            {
+    //                Debug.Log("Moving right");
 
-                    grid[x, y - 1] = 0;
-                    grid[x + 1, y - 1] = 1;
-                }
-            }
-            else if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                if (x - 1 >= 0 && grid[x - 1, y - 1] == 0)
-                {
-                    Debug.Log("Moving left");
+    //                grid[x, y - 1] = 0;
+    //                grid[x + 1, y - 1] = 1;
+    //            }
+    //        }
+    //        else if (Input.GetKey(KeyCode.LeftArrow))
+    //        {
+    //            if (x - 1 >= 0 && grid[x - 1, y - 1] == 0)
+    //            {
+    //                Debug.Log("Moving left");
 
-                    grid[x, y - 1] = 0;
-                    grid[x - 1, y - 1] = 1;
-                }
-            }
-        }
-    }
+    //                grid[x, y - 1] = 0;
+    //                grid[x - 1, y - 1] = 1;
+    //            }
+    //        }
+    //    }
+    //}
 
 }
