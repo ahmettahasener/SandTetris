@@ -1,11 +1,10 @@
 using UnityEngine;
-using static TetrisPiece;
-
 public class GridManager : MonoBehaviour
 {
     public GameObject cellObject; //The gameobject created for each grid cell
     public int[,] grid;
     public GameObject[,] cellSRenderers; // Grid for SpriteRenderer's
+    public SpriteRenderer[,] cellSRenderersComponents; // Grid for SpriteRenderer's
     public int columns; //Grid columns
     public int rows; //Grid rows
     float spriteSize = 0.1f;
@@ -15,6 +14,7 @@ public class GridManager : MonoBehaviour
     public Color backgroundColor;
     public TetrisManager tetrisManager;
     public bool tetrisMode;
+    public Transform cellContainer;
     void Start()
     {
         // Calculating camera borders
@@ -23,6 +23,7 @@ public class GridManager : MonoBehaviour
 
         grid = new int[columns, rows];
         cellSRenderers = new GameObject[columns, rows];
+        cellSRenderersComponents = new SpriteRenderer[columns, rows];
 
         for (int i = 0; i < columns; i++)
         {
@@ -46,27 +47,22 @@ public class GridManager : MonoBehaviour
 
     private void SpawnTile(int x, int y, float value, float spriteSize, Vector3 bottomLeft)
     {
-        GameObject cell = Instantiate(cellObject);
+        GameObject cell = Instantiate(cellObject, cellContainer);
+        cell.name = x + "_" + y;
         cellSRenderers[x, y] = cell;
+        cellSRenderersComponents[x, y] = cell.GetComponentInChildren<SpriteRenderer>();
         //Set position based on bottom left corner position
         cell.transform.position = new Vector3(bottomLeft.x + (x * spriteSize), bottomLeft.y + (y * spriteSize), 0);
     }
 
     void Update()
     {
-        if (tetrisMode && tetrisManager != null && !tetrisManager.hasActivePiece)
-        {
-            Debug.Log("updating grid");
-            UpdateGrid();
-        }
-        else if (!tetrisMode) {
-            UpdateGrid();
-        }
+        UpdateGrid();
         UpdateCellSprites();
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            tetrisManager.CreateNewPiece(TetrisShapes.T,0,0);
+
         }
     }
 
@@ -126,43 +122,14 @@ public class GridManager : MonoBehaviour
 
     void UpdateCellColor(int x, int y)
     {
-        SpriteRenderer sr = cellSRenderers[x, y].GetComponentInChildren<SpriteRenderer>(); //bir kez alalým sr leri onu güncelleyelim her update olmasýn
         if (grid[x, y] == 1)
         {
             //sr.color = cellColors[x, y]; // Use calculated color
-            sr.color = sandColor;
+            cellSRenderersComponents[x, y].color = sandColor;
         }
         else
         {
-            sr.color = backgroundColor; // Empty cells
+            cellSRenderersComponents[x, y].color = backgroundColor; // Empty cells
         }
     }
-
-    //void HandleTetrisPieces(int x, int y)
-    //{
-    //    if (tetrisManager != null && tetrisManager.hasActivePiece)
-    //    {
-    //        if (Input.GetKey(KeyCode.RightArrow))
-    //        {
-    //            if (x + 1 < columns && grid[x + 1, y - 1] == 0)
-    //            {
-    //                Debug.Log("Moving right");
-
-    //                grid[x, y - 1] = 0;
-    //                grid[x + 1, y - 1] = 1;
-    //            }
-    //        }
-    //        else if (Input.GetKey(KeyCode.LeftArrow))
-    //        {
-    //            if (x - 1 >= 0 && grid[x - 1, y - 1] == 0)
-    //            {
-    //                Debug.Log("Moving left");
-
-    //                grid[x, y - 1] = 0;
-    //                grid[x - 1, y - 1] = 1;
-    //            }
-    //        }
-    //    }
-    //}
-
 }

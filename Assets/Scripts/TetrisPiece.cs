@@ -1,70 +1,109 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TetrisPiece : MonoBehaviour
 {
-    public static class TetrisShapes
+    public GridManager gridManager;
+    public List<string> touchedCells = new List<string>(); // Stores the names of touched cells
+    public TetrisManager tetrisManager;
+    private void Start()
     {
-        public static int[,] I = new int[,]
-        {
-            {1},
-            {1},
-            {1},
-            {1},
-            {1},
-            {1},
-            {1},
-            {1},
-            {1},
-        };
-
-        public static int[,] O = new int[,]
-        {
-            {1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1},
-        };
-
-        public static int[,] S = new int[,]
-        {
-            {0, 0, 1, 1, 1, 1},
-            {0, 0, 1, 1, 1, 1},
-            {1, 1, 1, 1, 0, 0},
-            {1, 1, 1, 1, 0, 0},
-        };
-
-        public static int[,] Z = new int[,]
-        {
-            {1, 1, 1, 1, 0, 0},
-            {1, 1, 1, 1, 0, 0},
-            {0, 0, 1, 1, 1, 1},
-            {0, 0, 1, 1, 1, 1},
-        };
-
-        public static int[,] L = new int[,]
-        {
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 1, 1, 1},
-        };
-
-        public static int[,] T = new int[,]
-        {
-            {1, 1, 1, 1, 1},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-        };
+        gridManager = FindAnyObjectByType<GridManager>();
+        tetrisManager = FindObjectOfType<TetrisManager>();
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Sand"))
+        {
+            string cellName = collision.transform.parent.name;
+            if (!touchedCells.Contains(cellName))
+            {
+                touchedCells.Add(cellName);
+            }
+        }
+        else if (collision.CompareTag("RightBorder"))
+        {
+            tetrisManager.isTouchingRightBorder = true;
+        }
+        else if (collision.CompareTag("LeftBorder"))
+        {
+            tetrisManager.isTouchingLeftBorder = true;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Sand"))
+        {
+            string cellName = collision.transform.parent.name;
+            if (touchedCells.Contains(cellName))
+            {
+                touchedCells.Remove(cellName);
+            }
+        }
+        else if (collision.CompareTag("RightBorder"))
+        {
+            tetrisManager.isTouchingRightBorder = false;
+        }
+        else if (collision.CompareTag("LeftBorder"))
+        {
+            tetrisManager.isTouchingLeftBorder = false;
+        }
+    }
+
+    private void Update()
+    {
+        bool isGrounded = false;
+
+        if (touchedCells.Count > 0)
+        {
+            foreach (string cellName in touchedCells)
+            {
+                string[] coordinates = cellName.Split('_');
+                if (coordinates.Length == 2 &&
+                    int.TryParse(coordinates[0], out int x) &&
+                    int.TryParse(coordinates[1], out int y))
+                {
+                    if (y == 0 || (y > 0 && gridManager.grid[x, y - 1] == 1))
+                    {
+                        isGrounded = true; // If there is contact with a occupied cell
+                    }
+                }
+            }
+        }
+
+        if (isGrounded)
+        {
+            FinalizePiece(); // Update all grids in TouchedCells and close the fragment
+        }
+    }
+
+
+    private void FinalizePiece()
+    {
+        // Set the grid values ​​of all cells in TouchedCells to 1
+        foreach (string cellName in touchedCells)
+        {
+            // Parse x and y coordinates from cell name
+            string[] coordinates = cellName.Split('_');
+            if (coordinates.Length == 2 &&
+                int.TryParse(coordinates[0], out int x) &&
+                int.TryParse(coordinates[1], out int y))
+            {
+                if (x >= 0 && x < gridManager.columns && y >= 0 && y < gridManager.rows)
+                {
+                    gridManager.grid[x, y] = 1;
+                }
+            }
+        }
+
+        touchedCells.Clear();
+
+        Debug.Log("Piece settled and deactivating.");
+        tetrisManager.hasActivePiece = false;
+        if (!tetrisManager.hasActivePiece) {
+            tetrisManager.CreateNewPiece();
+        }
+        gameObject.SetActive(false);
+    }
 }
