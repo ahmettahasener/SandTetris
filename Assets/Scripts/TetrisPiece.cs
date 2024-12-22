@@ -104,6 +104,7 @@ public class TetrisPiece : MonoBehaviour
         if (!tetrisManager.hasActivePiece) {
             tetrisManager.CreateNewPiece();
         }
-        gameObject.SetActive(false);
+        Destroy(gameObject);
+        //gameObject.SetActive(false);
     }
 }

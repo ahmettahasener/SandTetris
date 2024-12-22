@@ -15,6 +15,7 @@ public class GridManager : MonoBehaviour
     public TetrisManager tetrisManager;
     public bool tetrisMode;
     public Transform cellContainer;
+    public bool pause;
     void Start()
     {
         // Calculating camera borders
@@ -57,12 +58,10 @@ public class GridManager : MonoBehaviour
 
     void Update()
     {
-        UpdateGrid();
-        UpdateCellSprites();
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (!pause)
         {
-
+            UpdateGrid();
+            UpdateCellSprites();
         }
     }
 
@@ -76,7 +75,6 @@ public class GridManager : MonoBehaviour
                 {
                     grid[x, y] = 0;      // Empty the current cell
                     grid[x, y - 1] = 1; // The lower cell becomes sand
-                    //HandleTetrisPieces(x,y);
                 }
                 //Randomness if both right and left cells are empty
                 else if (grid[x, y] == 1 && x > 0 && x < columns - 1 && y != 0 && grid[x + 1, y - 1] == 0 && grid[x - 1, y - 1] == 0) 
@@ -122,12 +120,12 @@ public class GridManager : MonoBehaviour
 
     void UpdateCellColor(int x, int y)
     {
-        if (grid[x, y] == 1)
+        if (grid[x, y] == 1 && cellSRenderersComponents[x, y].color == backgroundColor)
         {
             //sr.color = cellColors[x, y]; // Use calculated color
             cellSRenderersComponents[x, y].color = sandColor;
         }
-        else
+        else if (grid[x, y] == 0)
         {
             cellSRenderersComponents[x, y].color = backgroundColor; // Empty cells
         }

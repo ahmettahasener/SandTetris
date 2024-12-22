@@ -550,7 +550,8 @@ MonoBehaviour:
   gridManager: {fileID: 1509523417}
   hasActivePiece: 0
   activePiece: {fileID: 0}
-  isTouchingBorder: 0
+  isTouchingRightBorder: 0
+  isTouchingLeftBorder: 0
   tetrisPieces:
   - {fileID: 7139016121022658380, guid: ad3230dc149753e48b5f67df64240c99, type: 3}
   - {fileID: 6318907085397851950, guid: 30dd7809e9eb2824487f7dd7e5f5cb2d, type: 3}
@@ -561,6 +562,12 @@ MonoBehaviour:
   - {fileID: 6764480033534994853, guid: b1ef9cf2e09a66f41bc2e971948b3261, type: 3}
   - {fileID: 6898430881502825065, guid: b405b89599ca5a24cab367d92f415524, type: 3}
   speed: 3
+  pieceColors:
+  - {r: 1, g: 0.7529412, b: 0.79607844, a: 1}
+  - {r: 0.827451, g: 1, b: 0.80784315, a: 1}
+  - {r: 0.6901961, g: 0.8784314, b: 0.9019608, a: 1}
+  - {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
+  - {r: 1, g: 0.4509804, b: 0.4509804, a: 1}
 --- !u!4 &1110745143
 Transform:
   m_ObjectHideFlags: 0
@@ -645,6 +652,7 @@ MonoBehaviour:
   tetrisManager: {fileID: 1110745142}
   tetrisMode: 0
   cellContainer: {fileID: 1308545078}
+  pause: 0
 --- !u!4 &1509523418
 Transform:
   m_ObjectHideFlags: 0
